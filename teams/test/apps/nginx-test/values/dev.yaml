@@ -1,14 +1,15 @@
 # Dev-specific overrides
-global:
-  namespace: test-nginx-dev
 
-deployments:
-  web:
-    image: nginx:1.25-alpine
-    minReplicas: 1
-    maxReplicas: 2
-    
-    resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
+replicaCount: 2
+
+image:
+  tag: "1.25"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Dev-specific label
+commonLabels:
+  environment: dev
