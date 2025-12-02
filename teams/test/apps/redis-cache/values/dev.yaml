@@ -1,0 +1,16 @@
+# Dev-specific overrides
+
+global:
+  labels:
+    env: dev
+
+statefulSets:
+  redis:
+    # Dev uses more replicas
+    replicas: 2
+
+    # Dev gets more resources
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
