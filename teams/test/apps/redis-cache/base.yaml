@@ -12,6 +12,8 @@ statefulSets:
   redis:
     image: "redis:7-alpine"
     replicas: 1
+    serviceAccount:
+      disabled: true
 
     ports:
       - port: 6379
