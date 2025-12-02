@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: test-applicationset
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  generators:
+    - git:
+        repoURL: https://github.com/karlmjogila/argocd-test-values.git
+        revision: main
+        files:
+          - path: "teams/*/apps/*/values/dev.yaml"  # File-based discovery
+
+  template:
+    metadata:
+      name: '{{index .path.segments 1}}-{{index .path.segments 3}}-dev'
+      labels:
+        team: '{{index .path.segments 1}}'
+        app: '{{index .path.segments 3}}'
+        environment: dev
+    spec:
+      project: default
+
+      sources:
+        # Helm chart from bitnami
+        - repoURL: https://charts.bitnami.com/bitnami
+          chart: nginx
+          targetRevision: "22.3.3"
+          helm:
+            releaseName: '{{index .path.segments 3}}'
+            valueFiles:
+              # Base configuration at app level (REQUIRED)
+              - $values/teams/{{index .path.segments 1}}/apps/{{index .path.segments 3}}/base.yaml
+              # Environment-specific overrides
+              - $values/teams/{{index .path.segments 1}}/apps/{{index .path.segments 3}}/values/dev.yaml
+
+        # Git repository with values files
+        - repoURL: https://github.com/karlmjogila/argocd-test-values.git
+          targetRevision: main
+          ref: values
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{index .path.segments 1}}-{{index .path.segments 3}}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
