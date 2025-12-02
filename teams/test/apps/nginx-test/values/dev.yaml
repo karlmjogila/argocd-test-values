@@ -1,15 +1,17 @@
 # Dev-specific overrides
 
-replicaCount: 2
+global:
+  labels:
+    env: dev
 
-image:
-  tag: "latest"
+deployments:
+  api:
+    # Dev uses more replicas for testing
+    minReplicas: 2
+    maxReplicas: 2
 
-resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
-
-# Dev-specific label
-commonLabels:
-  environment: dev
+    # Dev gets more resources
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi

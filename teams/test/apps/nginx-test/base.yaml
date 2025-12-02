@@ -1,26 +1,41 @@
 # Base configuration - shared across all environments
-# Using bitnami/nginx chart structure
+# Using common-service chart structure
 
-replicaCount: 1
+global:
+  name: "nginx-test"
+  namespace: "test-nginx-test"
+  labels:
+    app.kubernetes.io/component: webserver
+    owner: test-team
 
-image:
-  registry: docker.io
-  repository: bitnami/nginx
-  pullPolicy: IfNotPresent
+deployments:
+  api:
+    image: "docker.io/nginx:1.27"
+    minReplicas: 1
+    maxReplicas: 1
 
-service:
-  type: ClusterIP
-  ports:
-    http: 80
+    ports:
+      - port: 80
+        targetPort: 80
 
-resources:
-  requests:
-    cpu: 50m
-    memory: 64Mi
-  limits:
-    cpu: 100m
-    memory: 128Mi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
-# Common labels
-commonLabels:
-  app.kubernetes.io/component: webserver
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 5

@@ -25,10 +25,10 @@ spec:
       project: default
 
       sources:
-        # Helm chart from bitnami
-        - repoURL: https://charts.bitnami.com/bitnami
-          chart: nginx
-          targetRevision: "22.3.3"
+        # Helm chart from ECR (OCI)
+        - repoURL: 727254280049.dkr.ecr.ap-southeast-1.amazonaws.com/helm-charts
+          chart: common-service
+          targetRevision: "1.0.1"
           helm:
             releaseName: '{{index .path.segments 3}}'
             valueFiles:
