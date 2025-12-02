@@ -1,0 +1,36 @@
+# Base configuration - shared across all environments
+global:
+  name: nginx-test
+  labels:
+    app: nginx-test
+    team: test
+
+deployments:
+  web:
+    image: nginx:latest
+    
+    ports:
+      - port: 80
+        targetPort: 80
+    
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
